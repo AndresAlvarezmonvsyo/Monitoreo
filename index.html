@@ -1,0 +1,1703 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Monitoreo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #f72585;
+            --background: #f8f9fa;
+            --card: #ffffff;
+            --text: #212529;
+            --border: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 65px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .container {
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Login/Register */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary);
+            background-image: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .auth-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .auth-card h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .auth-links {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        .auth-links a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Header */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .user-profile span {
+            margin-left: 0.5rem;
+        }
+        
+        .user-menu {
+            position: absolute;
+            right: 1rem;
+            top: 4rem;
+            background: var(--card);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            min-width: 200px;
+            z-index: 101;
+        }
+        
+        .user-menu ul {
+            list-style: none;
+        }
+        
+        .user-menu li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .user-menu li:last-child {
+            border-bottom: none;
+        }
+        
+        .user-menu a {
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+        }
+        
+        .user-menu a:hover {
+            color: var(--primary);
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 1rem;
+        }
+        
+        /* Activities */
+        .activity-list {
+            margin-top: 1rem;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--card);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin-right: 1rem;
+        }
+        
+        .activity-details {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        /* Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .nav-item i {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background: var(--card);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        /* Data tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Form actions */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        /* App version */
+        .app-version {
+            text-align: center;
+            margin-top: 2rem;
+            color: #6c757d;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        /* Help button */
+        .help-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            z-index: 99;
+        }
+        
+        /* Form filters */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            background: var(--card);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal {
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login/Register Screen -->
+    <div id="auth-screen" class="auth-container">
+        <div class="auth-card">
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Nombre de Usuario</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="password-container">
+                        <input type="password" id="password" class="form-control" required>
+                        <button type="button" class="password-toggle" id="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+                <div class="auth-links">
+                    <p>¿No tienes una cuenta? <a href="#" id="register-link">Registrarse</a></p>
+                </div>
+            </form>
+            
+            <form id="register-form" class="hidden">
+                <h2>Registrarse</h2>
+                <div class="form-group">
+                    <label for="reg-username">Nombre de Usuario</label>
+                    <input type="text" id="reg-username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Contraseña</label>
+                    <div class="password-container">
+                        <input type="password" id="reg-password" class="form-control" required>
+                        <button type="button" class="password-toggle" id="reg-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrarse</button>
+                <div class="auth-links">
+                    <p>¿Ya tienes una cuenta? <a href="#" id="login-link">Iniciar Sesión</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <h1>Sistema de Monitoreo</h1>
+                <div class="user-profile" id="profile-toggle">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="current-user">Usuario</span>
+                </div>
+            </div>
+            <div class="user-menu hidden" id="user-menu">
+                <ul>
+                    <li><a href="#" id="switch-account"><i class="fas fa-exchange-alt"></i> Cambiar Cuenta</a></li>
+                    <li><a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="container">
+            <!-- Home Screen -->
+            <div id="home-screen" class="content-screen">
+                <h2><i class="fas fa-home"></i> Inicio</h2>
+                
+                <div class="dashboard">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Ventas</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-value">$24,580</div>
+                        <div class="stat-label">Este mes</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Compras</h3>
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-value">$18,340</div>
+                        <div class="stat-label">Este mes</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Proveedores</h3>
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Activos</div>
+                    </div>
+                </div>
+                
+                <h3 class="mt-4">Actividad Reciente</h3>
+                
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Nueva venta registrada</div>
+                            <div class="activity-time">Hace 2 horas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Nuevo proveedor añadido</div>
+                            <div class="activity-time">Hace 5 horas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Nueva compra registrada</div>
+                            <div class="activity-time">Hace 1 día</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="app-version" id="version-info">
+                    Versión 1.0.0
+                </div>
+            </div>
+            
+            <!-- Proveedores Screen -->
+            <div id="suppliers-screen" class="content-screen hidden">
+                <h2><i class="fas fa-truck"></i> Proveedores</h2>
+                
+                <div class="filters">
+                    <input type="text" class="form-control" placeholder="Buscar proveedor..." id="supplier-search">
+                    <button class="btn btn-primary" id="add-supplier-btn"><i class="fas fa-plus"></i> Nuevo Proveedor</button>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Contacto</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliers-table-body">
+                        <tr>
+                            <td>Distribuidora ABC</td>
+                            <td>Juan Pérez</td>
+                            <td>555-1234</td>
+                            <td>Activo</td>
+                            <td>
+                                <button class="btn btn-sm"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mayorista XYZ</td>
+                            <td>María López</td>
+                            <td>555-5678</td>
+                            <td>Activo</td>
+                            <td>
+                                <button class="btn btn-sm"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Compras Screen -->
+            <div id="purchases-screen" class="content-screen hidden">
+                <h2><i class="fas fa-shopping-cart"></i> Compras</h2>
+                
+                <div class="filters">
+                    <select class="filter-select" id="purchase-period">
+                        <option value="week">Semanal</option>
+                        <option value="month" selected>Mensual</option>
+                        <option value="year">Anual</option>
+                    </select>
+                    <button class="btn btn-primary" id="add-purchase-btn"><i class="fas fa-plus"></i> Nueva Compra</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tendencia de Compras</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="purchases-chart"></canvas>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Proveedor</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchases-table-body">
+                        <tr>
+                            <td>15/03/2025</td>
+                            <td>Distribuidora ABC</td>
+                            <td>5</td>
+                            <td>$1,250.00</td>
+                            <td>
+                                <button class="btn btn-sm"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10/03/2025</td>
+                            <td>Mayorista XYZ</td>
+                            <td>8</td>
+                            <td>$2,340.00</td>
+                            <td>
+                                <button class="btn btn-sm"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Ventas Screen -->
+            <div id="sales-screen" class="content-screen hidden">
+                <h2><i class="fas fa-cash-register"></i> Ventas</h2>
+                
+                <div class="filters">
+                    <select class="filter-select" id="sales-period">
+                        <option value="week">Semanal</option>
+                        <option value="month" selected>Mensual</option>
+                        <option value="year">Anual</option>
+                    </select>
+                    <button class="btn btn-primary" id="add-sale-btn"><i class="fas fa-plus"></i> Nueva Venta</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tendencia de Ventas</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sales-chart"></canvas>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sales-table-body">
+                        <tr>
+                            <td>18/03/2025</td>
+                            <td>Cliente A</td>
+                            <td>3</td>
+                            <td>$850.00</td>
+                            <td>
+                                <button class="btn btn-sm"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>16/03/2025</td>
+                            <td>Cliente B</td>
+                            <td>2</td>
+                            <td>$420.00</td>
+                            <td>
+                                <button class="btn btn-sm"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" data-screen="home-screen">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </a>
+            <a href="#" class="nav-item" data-screen="suppliers-screen">
+                <i class="fas fa-truck"></i>
+                <span>Proveedores</span>
+            </a>
+            <a href="#" class="nav-item" data-screen="purchases-screen">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Compras</span>
+            </a>
+            <a href="#" class="nav-item" data-screen="sales-screen">
+                <i class="fas fa-cash-register"></i>
+                <span>Ventas</span>
+            </a>
+        </nav>
+        
+        <!-- Help Button -->
+        <div class="help-button" id="help-btn">
+            <i class="fas fa-question"></i>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <!-- Help Modal -->
+    <div class="modal-overlay hidden" id="help-modal">
+        <div class="modal">
+            <button class="modal-close" id="help-modal-close"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Ayuda</h2>
+            <div class="modal-content">
+                <h3>Cómo usar la aplicación</h3>
+                <p>Bienvenido al Sistema de Monitoreo. Esta aplicación te permite gestionar proveedores, compras y ventas de tu negocio.</p>
+                
+                <h4>Usuarios predeterminados:</h4>
+                <ul>
+                    <li><strong>Usuario:</strong> Nicoll - <strong>Contraseña:</strong> Nicoll2025</li>
+                    <li><strong>Usuario:</strong> Andres - <strong>Contraseña:</strong> Andres2025</li>
+                </ul>
+                
+                <h4>Registro de nuevos usuarios:</h4>
+                <p>Al registrar un nuevo usuario, la contraseña se autocompletará con el nombre de usuario seguido del año actual. Por ejemplo, si registras el usuario "Carlos", la contraseña sugerida será "Carlos2025".</p>
+                
+                <h4>Secciones principales:</h4>
+                <ul>
+                    <li><strong>Inicio:</strong> Muestra un resumen de la actividad reciente y estadísticas generales.</li>
+                    <li><strong>Proveedores:</strong> Gestiona la información de tus proveedores.</li>
+                    <li><strong>Compras:</strong> Registra y visualiza las compras realizadas.</li>
+                    <li><strong>Ventas:</strong> Registra y visualiza las ventas realizadas.</li>
+                </ul>
+                
+                <h4>Cambio de usuarios:</h4>
+                <p>Puedes cambiar entre diferentes cuentas haciendo clic en tu nombre de usuario en la parte superior derecha y seleccionando "Cambiar Cuenta".</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Version Modal -->
+    <div class="modal-overlay hidden" id="version-modal">
+        <div class="modal">
+            <button class="modal-close" id="version-modal-close"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Historial de Versiones</h2>
+            <div class="modal-content">
+                <h3>Versión 1.0.0 (20/03/2025)</h3>
+                <ul>
+                    <li>Lanzamiento inicial de la aplicación</li>
+                    <li>Funcionalidad básica de proveedores, compras y ventas</li>
+                    <li>Gráficos de tendencias para compras y ventas</li>
+                    <li>Sistema de autenticación de usuarios</li>
+                </ul>
+                
+                <h3>Versión 0.9.0 (10/03/2025)</h3>
+                <ul>
+                    <li>Versión beta con funcionalidades básicas</li>
+                    <li>Mejoras en la interfaz de usuario</li>
+                    <li>Corrección de errores menores</li>
+                </ul>
+                
+                <h3>Versión 0.8.0 (01/03/2025)</h3>
+                <ul>
+                    <li>Versión alpha para pruebas internas</li>
+                    <li>Implementación inicial del sistema de usuarios</li>
+                    <li>Desarrollo del panel de estadísticas</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+  <!-- Switch Account Modal -->
+    <div class="modal-overlay hidden" id="switch-account-modal">
+        <div class="modal">
+            <button class="modal-close" id="switch-account-modal-close"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Cambiar Cuenta</h2>
+            <div class="modal-content">
+                <div id="accounts-list">
+                    <!-- Las cuentas se cargarán dinámicamente aquí -->
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="add-account-btn">Agregar Cuenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Supplier Modal -->
+    <div class="modal-overlay hidden" id="add-supplier-modal">
+        <div class="modal">
+            <button class="modal-close" id="add-supplier-modal-close"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Nuevo Proveedor</h2>
+            <div class="modal-content">
+                <form id="add-supplier-form">
+                    <div class="form-group">
+                        <label for="supplier-name">Nombre</label>
+                        <input type="text" id="supplier-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier-contact">Contacto</label>
+                        <input type="text" id="supplier-contact" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier-phone">Teléfono</label>
+                        <input type="text" id="supplier-phone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier-email">Email</label>
+                        <input type="email" id="supplier-email" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier-address">Dirección</label>
+                        <textarea id="supplier-address" class="form-control"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn" id="cancel-add-supplier">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Purchase Modal -->
+    <div class="modal-overlay hidden" id="add-purchase-modal">
+        <div class="modal">
+            <button class="modal-close" id="add-purchase-modal-close"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Nueva Compra</h2>
+            <div class="modal-content">
+                <form id="add-purchase-form">
+                    <div class="form-group">
+                        <label for="purchase-date">Fecha</label>
+                        <input type="date" id="purchase-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchase-supplier">Proveedor</label>
+                        <select id="purchase-supplier" class="form-control" required>
+                            <option value="">Seleccionar proveedor</option>
+                            <option value="1">Distribuidora ABC</option>
+                            <option value="2">Mayorista XYZ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Productos</label>
+                        <div id="purchase-products">
+                            <div class="product-item">
+                                <input type="text" class="form-control" placeholder="Producto" required>
+                                <input type="number" class="form-control" placeholder="Cantidad" min="1" required>
+                                <input type="number" class="form-control" placeholder="Precio" min="0" step="0.01" required>
+                                <button type="button" class="btn"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn" id="add-product-btn">
+                            <i class="fas fa-plus"></i> Agregar Producto
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchase-total">Total</label>
+                        <input type="number" id="purchase-total" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchase-notes">Notas</label>
+                        <textarea id="purchase-notes" class="form-control"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn" id="cancel-add-purchase">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Sale Modal -->
+    <div class="modal-overlay hidden" id="add-sale-modal">
+        <div class="modal">
+            <button class="modal-close" id="add-sale-modal-close"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Nueva Venta</h2>
+            <div class="modal-content">
+                <form id="add-sale-form">
+                    <div class="form-group">
+                        <label for="sale-date">Fecha</label>
+                        <input type="date" id="sale-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale-client">Cliente</label>
+                        <input type="text" id="sale-client" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Productos</label>
+                        <div id="sale-products">
+                            <div class="product-item">
+                                <input type="text" class="form-control" placeholder="Producto" required>
+                                <input type="number" class="form-control" placeholder="Cantidad" min="1" required>
+                                <input type="number" class="form-control" placeholder="Precio" min="0" step="0.01" required>
+                                <button type="button" class="btn"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn" id="add-sale-product-btn">
+                            <i class="fas fa-plus"></i> Agregar Producto
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale-total">Total</label>
+                        <input type="number" id="sale-total" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="sale-notes">Notas</label>
+                        <textarea id="sale-notes" class="form-control"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn" id="cancel-add-sale">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Datos de usuarios predeterminados
+            const defaultUsers = [
+                { username: 'Nicoll', password: 'Nicoll2025' },
+                { username: 'Andres', password: 'Andres2025' }
+            ];
+            
+            // Inicializar usuarios en localStorage si no existen
+            if (!localStorage.getItem('users')) {
+                localStorage.setItem('users', JSON.stringify(defaultUsers));
+            }
+            
+            // Inicializar datos de la aplicación si no existen
+            if (!localStorage.getItem('suppliers')) {
+                const initialSuppliers = [
+                    { id: 1, name: 'Distribuidora ABC', contact: 'Juan Pérez', phone: '555-1234', email: 'juan@abc.com', address: 'Calle Principal 123', status: 'Activo' },
+                    { id: 2, name: 'Mayorista XYZ', contact: 'María López', phone: '555-5678', email: 'maria@xyz.com', address: 'Avenida Central 456', status: 'Activo' }
+                ];
+                localStorage.setItem('suppliers', JSON.stringify(initialSuppliers));
+            }
+            
+            if (!localStorage.getItem('purchases')) {
+                const initialPurchases = [
+                    { id: 1, date: '2025-03-15', supplier: 1, products: [{ name: 'Producto A', quantity: 3, price: 150 }, { name: 'Producto B', quantity: 2, price: 400 }], total: 1250, notes: '' },
+                    { id: 2, date: '2025-03-10', supplier: 2, products: [{ name: 'Producto C', quantity: 5, price: 250 }, { name: 'Producto D', quantity: 3, price: 380 }], total: 2340, notes: '' }
+                ];
+                localStorage.setItem('purchases', JSON.stringify(initialPurchases));
+            }
+            
+            if (!localStorage.getItem('sales')) {
+                const initialSales = [
+                    { id: 1, date: '2025-03-18', client: 'Cliente A', products: [{ name: 'Producto A', quantity: 2, price: 200 }, { name: 'Producto B', quantity: 1, price: 450 }], total: 850, notes: '' },
+                    { id: 2, date: '2025-03-16', client: 'Cliente B', products: [{ name: 'Producto C', quantity: 1, price: 250 }, { name: 'Producto D', quantity: 1, price: 170 }], total: 420, notes: '' }
+                ];
+                localStorage.setItem('sales', JSON.stringify(initialSales));
+            }
+            
+            // Variables globales
+            let currentUser = null;
+            let currentScreen = 'home-screen';
+            
+            // Funciones auxiliares
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString();
+            }
+            
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(amount);
+            }
+            
+            function getSupplierName(supplierId) {
+                const suppliers = JSON.parse(localStorage.getItem('suppliers'));
+                const supplier = suppliers.find(s => s.id === supplierId);
+                return supplier ? supplier.name : 'Desconocido';
+            }
+            
+            // Autenticación
+            $('#login-form').on('submit', function(e) {
+                e.preventDefault();
+                const username = $('#username').val().trim();
+                const password = $('#password').val().trim();
+                
+                const users = JSON.parse(localStorage.getItem('users'));
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    currentUser = username;
+                    $('#current-user').text(username);
+                    
+                    // Mostrar la aplicación
+                    $('#auth-screen').addClass('hidden');
+                    $('#app').removeClass('hidden');
+                    
+                    // Cargar datos iniciales
+                    loadHomeData();
+                    loadSuppliersData();
+                    loadPurchasesData();
+                    loadSalesData();
+                    
+                    // Inicializar gráficos
+                    initializeCharts();
+                } else {
+                    alert('Usuario o contraseña incorrectos');
+                }
+            });
+            
+            $('#register-form').on('submit', function(e) {
+                e.preventDefault();
+                const username = $('#reg-username').val().trim();
+                const password = $('#reg-password').val().trim();
+                
+                const users = JSON.parse(localStorage.getItem('users'));
+                
+                // Verificar si el usuario ya existe
+                if (users.some(u => u.username === username)) {
+                    alert('El nombre de usuario ya está en uso');
+                    return;
+                }
+                
+                // Agregar nuevo usuario
+                users.push({ username, password });
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                alert('Usuario registrado con éxito');
+                
+                // Volver al formulario de login
+                $('#register-form').addClass('hidden');
+                $('#login-form').removeClass('hidden');
+            });
+            
+            // Toggle entre formularios de login y registro
+            $('#register-link').on('click', function(e) {
+                e.preventDefault();
+                $('#login-form').addClass('hidden');
+                $('#register-form').removeClass('hidden');
+                
+                // Auto-completar contraseña con nombre de usuario + año actual
+                $('#reg-username').on('input', function() {
+                    const username = $(this).val().trim();
+                    const currentYear = new Date().getFullYear();
+                    $('#reg-password').val(username + currentYear);
+                });
+            });
+            
+            $('#login-link').on('click', function(e) {
+                e.preventDefault();
+                $('#register-form').addClass('hidden');
+                $('#login-form').removeClass('hidden');
+            });
+            
+            // Mostrar/ocultar contraseña
+            $('.password-toggle').on('click', function() {
+                const passwordField = $(this).siblings('input');
+                const type = passwordField.attr('type');
+                passwordField.attr('type', type === 'password' ? 'text' : 'password');
+                $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+            });
+            
+            // Navegación
+            $('.nav-item').on('click', function(e) {
+                e.preventDefault();
+                const targetScreen = $(this).data('screen');
+                
+                // Cambiar pantalla activa
+                $('.content-screen').addClass('hidden');
+                $('#' + targetScreen).removeClass('hidden');
+                
+                // Actualizar navegación
+                $('.nav-item').removeClass('active');
+                $(this).addClass('active');
+                
+                currentScreen = targetScreen;
+            });
+            
+            // Menú de usuario
+            $('#profile-toggle').on('click', function() {
+                $('#user-menu').toggleClass('hidden');
+            });
+            
+            // Cerrar sesión
+            $('#logout').on('click', function(e) {
+                e.preventDefault();
+                currentUser = null;
+                
+                // Mostrar pantalla de autenticación
+                $('#app').addClass('hidden');
+                $('#auth-screen').removeClass('hidden');
+                
+                // Limpiar formulario de login
+                $('#login-form')[0].reset();
+                $('#user-menu').addClass('hidden');
+            });
+            
+            // Cambiar cuenta
+            $('#switch-account').on('click', function(e) {
+                e.preventDefault();
+                $('#user-menu').addClass('hidden');
+                
+                // Cargar cuentas disponibles
+                const users = JSON.parse(localStorage.getItem('users'));
+                const accountsList = $('#accounts-list');
+                accountsList.empty();
+                
+                users.forEach(user => {
+                    const isActive = user.username === currentUser;
+                    accountsList.append(`
+                        <div class="activity-item account-item ${isActive ? 'active' : ''}" data-username="${user.username}">
+                            <div class="activity-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-title">${user.username}</div>
+                                <div class="activity-time">${isActive ? 'Cuenta actual' : ''}</div>
+                            </div>
+                        </div>
+                    `);
+                });
+                
+                // Mostrar modal
+                $('#switch-account-modal').removeClass('hidden');
+            });
+            
+            // Seleccionar cuenta
+            $(document).on('click', '.account-item', function() {
+                const username = $(this).data('username');
+                const users = JSON.parse(localStorage.getItem('users'));
+                const user = users.find(u => u.username === username);
+                
+                if (user) {
+                    currentUser = username;
+                    $('#current-user').text(username);
+                    $('#switch-account-modal').addClass('hidden');
+                    
+                    // Recargar datos
+                    loadHomeData();
+                }
+            });
+            
+            // Modal de ayuda
+            $('#help-btn').on('click', function() {
+                $('#help-modal').removeClass('hidden');
+            });
+            
+            // Modal de versiones
+            $('#version-info').on('click', function() {
+                $('#version-modal').removeClass('hidden');
+            });
+            
+            // Cerrar modales
+            $('.modal-close, .modal-overlay').on('click', function(e) {
+                if (e.target === this) {
+                    $('.modal-overlay').addClass('hidden');
+                }
+            });
+            
+            // Evitar cierre del modal al hacer clic dentro
+            $('.modal').on('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Botones específicos para cerrar modales
+            $('#help-modal-close').on('click', function() {
+                $('#help-modal').addClass('hidden');
+            });
+            
+            $('#version-modal-close').on('click', function() {
+                $('#version-modal').addClass('hidden');
+            });
+            
+            $('#switch-account-modal-close').on('click', function() {
+                $('#switch-account-modal').addClass('hidden');
+            });
+            
+            // Proveedores
+            $('#add-supplier-btn').on('click', function() {
+                $('#add-supplier-form')[0].reset();
+                $('#add-supplier-modal').removeClass('hidden');
+            });
+            
+            $('#add-supplier-modal-close, #cancel-add-supplier').on('click', function() {
+                $('#add-supplier-modal').addClass('hidden');
+            });
+            
+            $('#add-supplier-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const name = $('#supplier-name').val().trim();
+                const contact = $('#supplier-contact').val().trim();
+                const phone = $('#supplier-phone').val().trim();
+                const email = $('#supplier-email').val().trim();
+                const address = $('#supplier-address').val().trim();
+                
+                // Obtener proveedores existentes
+                const suppliers = JSON.parse(localStorage.getItem('suppliers'));
+                
+                // Crear nuevo proveedor
+                const newSupplier = {
+                    id: suppliers.length > 0 ? Math.max(...suppliers.map(s => s.id)) + 1 : 1,
+                    name,
+                    contact,
+                    phone,
+                    email,
+                    address,
+                    status: 'Activo'
+                };
+                
+                // Agregar a la lista
+                suppliers.push(newSupplier);
+                localStorage.setItem('suppliers', JSON.stringify(suppliers));
+                
+                // Actualizar tabla
+                loadSuppliersData();
+                
+                // Cerrar modal
+                $('#add-supplier-modal').addClass('hidden');
+                
+                // Agregar actividad reciente
+                addActivity(`Nuevo proveedor añadido: ${name}`);
+            });
+            
+            // Compras
+            $('#add-purchase-btn').on('click', function() {
+                $('#add-purchase-form')[0].reset();
+                
+                // Establecer fecha actual
+                const today = new Date().toISOString().split('T')[0];
+                $('#purchase-date').val(today);
+                
+                // Cargar proveedores
+                const suppliers = JSON.parse(localStorage.getItem('suppliers'));
+                const supplierSelect = $('#purchase-supplier');
+                supplierSelect.empty();
+                supplierSelect.append('<option value="">Seleccionar proveedor</option>');
+                
+                suppliers.forEach(supplier => {
+                    supplierSelect.append(`<option value="${supplier.id}">${supplier.name}</option>`);
+                });
+                
+                // Limpiar productos
+                $('#purchase-products').html(`
+                    <div class="product-item">
+                        <input type="text" class="form-control product-name" placeholder="Producto" required>
+                        <input type="number" class="form-control product-quantity" placeholder="Cantidad" min="1" required>
+                        <input type="number" class="form-control product-price" placeholder="Precio" min="0" step="0.01" required>
+                        <button type="button" class="btn remove-product"><i class="fas fa-times"></i></button>
+                    </div>
+                `);
+                
+                $('#add-purchase-modal').removeClass('hidden');
+            });
+            
+            $('#add-purchase-modal-close, #cancel-add-purchase').on('click', function() {
+                $('#add-purchase-modal').addClass('hidden');
+            });
+            
+            $('#add-product-btn').on('click', function() {
+                $('#purchase-products').append(`
+                    <div class="product-item">
+                        <input type="text" class="form-control product-name" placeholder="Producto" required>
+                        <input type="number" class="form-control product-quantity" placeholder="Cantidad" min="1" required>
+                        <input type="number" class="form-control product-price" placeholder="Precio" min="0" step="0.01" required>
+                        <button type="button" class="btn remove-product"><i class="fas fa-times"></i></button>
+                    </div>
+                `);
+            });
+            
+            $(document).on('click', '.remove-product', function() {
+                $(this).closest('.product-item').remove();
+                updateTotal();
+            });
+            
+            $(document).on('input', '.product-quantity, .product-price', function() {
+                updateTotal();
+            });
+            
+            function updateTotal() {
+                let total = 0;
+                $('.product-item').each(function() {
+                    const quantity = parseFloat($(this).find('.product-quantity').val()) || 0;
+                    const price = parseFloat($(this).find('.product-price').val()) || 0;
+                    total += quantity * price;
+                });
+                
+                $('#purchase-total').val(total.toFixed(2));
+            }
+            
+            $('#add-purchase-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const date = $('#purchase-date').val();
+                const supplier = parseInt($('#purchase-supplier').val());
+                const notes = $('#purchase-notes').val().trim();
+                
+                // Recopilar productos
+                const products = [];
+                $('.product-item').each(function() {
+                    const name = $(this).find('.product-name').val().trim();
+                    const quantity = parseInt($(this).find('.product-quantity').val());
+                    const price = parseFloat($(this).find('.product-price').val());
+                    
+                    if (name && quantity && price) {
+                        products.push({ name, quantity, price });
+                    }
+                });
+                
+                if (products.length === 0) {
+                    alert('Debe agregar al menos un producto');
+                    return;
+                }
+                
+                // Calcular total
+                const total = products.reduce((sum, product) => sum + (product.quantity * product.price), 0);
+                
+                // Obtener compras existentes
+                const purchases = JSON.parse(localStorage.getItem('purchases'));
+                
+                // Crear nueva compra
+                const newPurchase = {
+                    id: purchases.length > 0 ? Math.max(...purchases.map(p => p.id)) + 1 : 1,
+                    date,
+                    supplier,
+                    products,
+                    total,
+                    notes
+                };
+                
+                // Agregar a la lista
+                purchases.push(newPurchase);
+                localStorage.setItem('purchases', JSON.stringify(purchases));
+                
+                // Actualizar tabla y gráfico
+                loadPurchasesData();
+                updatePurchasesChart();
+                
+                // Cerrar modal
+                $('#add-purchase-modal').addClass('hidden');
+                
+                // Agregar actividad reciente
+                addActivity(`Nueva compra registrada: ${formatCurrency(total)}`);
+            });
+            
+            // Ventas
+            $('#add-sale-btn').on('click', function() {
+                $('#add-sale-form')[0].reset();
+                
+                // Establecer fecha actual
+                const today = new Date().toISOString().split('T')[0];
+                $('#sale-date').val(today);
+                
+                // Limpiar productos
+                $('#sale-products').html(`
+                    <div class="product-item">
+                        <input type="text" class="form-control product-name" placeholder="Producto" required>
+                        <input type="number" class="form-control product-quantity" placeholder="Cantidad" min="1" required>
+                        <input type="number" class="form-control product-price" placeholder="Precio" min="0" step="0.01" required>
+                        <button type="button" class="btn remove-product"><i class="fas fa-times"></i></button>
+                    </div>
+                `);
+                
+                $('#add-sale-modal').removeClass('hidden');
+            });
+            
+            $('#add-sale-modal-close, #cancel-add-sale').on('click', function() {
+                $('#add-sale-modal').addClass('hidden');
+            });
+            
+            $('#add-sale-product-btn').on('click', function() {
+                $('#sale-products').append(`
+                    <div class="product-item">
+                        <input type="text" class="form-control product-name" placeholder="Producto" required>
+                        <input type="number" class="form-control product-quantity" placeholder="Cantidad" min="1" required>
+                        <input type="number" class="form-control product-price" placeholder="Precio" min="0" step="0.01" required>
+                        <button type="button" class="btn remove-product"><i class="fas fa-times"></i></button>
+                    </div>
+                `);
+            });
+            
+            $('#add-sale-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const date = $('#sale-date').val();
+                const client = $('#sale-client').val().trim();
+                const notes = $('#sale-notes').val().trim();
+                
+                // Recopilar productos
+                const products = [];
+                $('#sale-products .product-item').each(function() {
+                    const name = $(this).find('.product-name').val().trim();
+                    const quantity = parseInt($(this).find('.product-quantity').val());
+                    const price = parseFloat($(this).find('.product-price').val());
+                    
+                    if (name && quantity && price) {
+                        products.push({ name, quantity, price });
+                    }
+                });
+                
+                if (products.length === 0) {
+                    alert('Debe agregar al menos un producto');
+                    return;
+                }
+                
+                // Calcular total
+                const total = products.reduce((sum, product) => sum + (product.quantity * product.price), 0);
+                
+                // Obtener ventas existentes
+                const sales = JSON.parse(localStorage.getItem('sales'));
+                
+                // Crear nueva venta
+                const newSale = {
+                    id: sales.length > 0 ? Math.max(...sales.map(s => s.id)) + 1 : 1,
+                    date,
+                    client,
+                    products,
+                    total,
+                    notes
+                };
+                
+                // Agregar a la lista
+                sales.push(newSale);
+                localStorage.setItem('sales', JSON.stringify(sales));
+                
+                // Actualizar tabla y gráfico
+                loadSalesData();
+                updateSalesChart();
+                
+                // Cerrar modal
+                $('#add-sale-modal').addClass('hidden');
+                
+                // Agregar actividad reciente
+                addActivity(`Nueva venta registrada: ${formatCurrency(total)}`);
+            });
+            
+            // Cargar datos de inicio
+            function loadHomeData() {
+                // Cargar datos de actividad reciente
+                // En una implementación real, esto vendría de una base de datos
+            }
+            
+            // Cargar datos de proveedores
+            function loadSuppliersData() {
+                const suppliers = JSON.parse(localStorage.getItem('suppliers'));
+                const tableBody = $('#suppliers-table-body');
+                tableBody.empty();
+                
+                suppliers.forEach(supplier => {
+                    tableBody.append(`
+                        <tr>
+                            <td>${supplier.name}</td>
+                            <td>${supplier.contact}</td>
+                            <td>${supplier.phone}</td>
+                            <td>${supplier.status}</td>
+                            <td>
+                                <button class="btn btn-sm edit-supplier" data-id="${supplier.id}"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm delete-supplier" data-id="${supplier.id}"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            }
+            
+            // Cargar datos de compras
+            function loadPurchasesData() {
+                const purchases = JSON.parse(localStorage.getItem('purchases'));
+                const tableBody = $('#purchases-table-body');
+                tableBody.empty();
+                
+                purchases.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(purchase => {
+                    tableBody.append(`
+                        <tr>
+                            <td>${formatDate(purchase.date)}</td>
+                            <td>${getSupplierName(purchase.supplier)}</td>
+                            <td>${purchase.products.length}</td>
+                            <td>${formatCurrency(purchase.total)}</td>
+                            <td>
+                                <button class="btn btn-sm view-purchase" data-id="${purchase.id}"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm edit-purchase" data-id="${purchase.id}"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+                
+                updatePurchasesChart();
+            }
+            
+            // Cargar datos de ventas
+            function loadSalesData() {
+                const sales = JSON.parse(localStorage.getItem('sales'));
+                const tableBody = $('#sales-table-body');
+                tableBody.empty();
+                
+                sales.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(sale => {
+                    tableBody.append(`
+                        <tr>
+                            <td>${formatDate(sale.date)}</td>
+                            <td>${sale.client}</td>
+                            <td>${sale.products.length}</td>
+                            <td>${formatCurrency(sale.total)}</td>
+                            <td>
+                                                                <button class="btn btn-sm view-sale" data-id="${sale.id}"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-sm edit-sale" data-id="${sale.id}"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                    `);
+                });
+                
+                updateSalesChart();
+            }
+            
+            // Actualizar gráfico de compras
+            function updatePurchasesChart() {
+                const purchases = JSON.parse(localStorage.getItem('purchases'));
+                const ctx = document.getElementById('purchases-chart').getContext('2d');
+                
+                const data = {
+                    labels: purchases.map(p => formatDate(p.date)),
+                    datasets: [{
+                        label: 'Compras',
+                        data: purchases.map(p => p.total),
+                        backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 1
+                    }]
+                };
+                
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
+                
+                if (window.purchasesChart) {
+                    window.purchasesChart.destroy();
+                }
+                
+                window.purchasesChart = new Chart(ctx, config);
+            }
+            
+            // Actualizar gráfico de ventas
+            function updateSalesChart() {
+                const sales = JSON.parse(localStorage.getItem('sales'));
+                const ctx = document.getElementById('sales-chart').getContext('2d');
+                
+                const data = {
+                    labels: sales.map(s => formatDate(s.date)),
+                    datasets: [{
+                        label: 'Ventas',
+                        data: sales.map(s => s.total),
+                        backgroundColor: 'rgba(247, 37, 133, 0.2)',
+                        borderColor: 'rgba(247, 37, 133, 1)',
+                        borderWidth: 1
+                    }]
+                };
+                
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
+                
+                if (window.salesChart) {
+                    window.salesChart.destroy();
+                }
+                
+                window.salesChart = new Chart(ctx, config);
+            }
+            
+            // Agregar actividad reciente
+            function addActivity(description) {
+                const activity = {
+                    title: description,
+                    time: new Date().toLocaleTimeString()
+                };
+                
+                const activityList = $('.activity-list');
+                activityList.prepend(`
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">${activity.title}</div>
+                            <div class="activity-time">Hace unos momentos</div>
+                        </div>
+                    </div>
+                `);
+            }
+            
+            // Inicializar gráficos
+            function initializeCharts() {
+                updatePurchasesChart();
+                updateSalesChart();
+            }
+        });
+    </script>
+</body>
+</html>
